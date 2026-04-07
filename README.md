@@ -1,8 +1,8 @@
 
 # TuneTailor Discord Bot
 
-**Author:** Ryan Demarest  
-**Course:** CSCI 244 – Advanced Software Development  
+**Author:** Ryan Demarest, Andrew Kelleman, Clannys Alvarez
+**Course:** CSCI 220 – Introduction To DevOps
 **Institution:** Moravian University
 
 ---
@@ -11,11 +11,11 @@
 
 TuneTailor is a Discord bot that delivers personalized music recommendations based on a short interactive survey. Users may complete the survey individually (solo mode) or with another user (pair mode). Based on each participant’s responses, the system analyzes mood and returns a curated list of recommended artists.
 
-The bot is fully interactive within Discord, supports pause and resume functionality, and is backed by Redis with automatic in-memory fallback for reliability. The project applies object-oriented design, test-driven development (TDD), clean code principles, and persistent storage using Redis.
+The bot is fully interactive within Discord, supports pause and resume functionality, and is backed by Redis with automatic in-memory fallback for reliability. The project applies object-oriented design, test-driven development (TDD), clean code principles, and persistent storage using Redis. (more to add here ...)
 
 ---
 
-## System Diagram
+## System Diagram (need to be updated)
 
 ![TuneTailor System Architecture Diagram](system-diagram.png)
 
@@ -131,7 +131,9 @@ During normal operation, both Redis and memory are updated to maintain synchroni
 
 ---
 
-## How to Run the Bot
+## How to Run the Bot (more to add here, local & prod.)
+
+*Local:* Todo:
 
 1. Create a `.env` file in the project root:
 - Make Sure to put only your "DISCORD_TOKEN = "
@@ -143,7 +145,7 @@ During normal operation, both Redis and memory are updated to maintain synchroni
 
 3. Run the main class:
 
-
+*Production* Todo:
 
 ---
 
@@ -158,9 +160,9 @@ During normal operation, both Redis and memory are updated to maintain synchroni
 - `!help` – Display help menu
 
 ---
-## Spotify Artist Getter (seperate)
+## Spotify Artist Getter (separate) (should not be needed, but if you wanted a fresh list in the .txt)
 
-** if you wanted to use this you need to put these in your `.env`
+** if you wanted to use this, you need to put these in your `.env`
 
 `SPOTIFY_CLIENT_ID `= "your client id"
 
