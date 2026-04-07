@@ -1,6 +1,8 @@
 package edu.moravian;
 
-import io.github.cdimascio.dotenv.Dotenv;
+
+import edu.moravian.secrets.Secrets;
+import edu.moravian.secrets.SecretsException;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.requests.GatewayIntent;
 import redis.clients.jedis.JedisPool;
@@ -10,18 +12,17 @@ public class TuneTailorBot {
     public static void main(String[] args) throws Exception {
         System.out.println("Starting TuneTailor Bot...");
 
-        // Loads environment variables from the .env file
-        Dotenv dotenv = Dotenv
-                .configure()
-                .ignoreIfMalformed()
-                .ignoreIfMissing()
-                .load();
-
-        String token = dotenv.get("DISCORD_TOKEN");
-        System.out.println("ENV TOKEN FOUND = " + (token != null && !token.isBlank()));
+        String token;
+        try {
+            Secrets secrets = new Secrets();
+            token = secrets.getSecret("220_Discord_Token", "DISCORD_TOKEN");
+            System.out.println("AWS SECRET TOKEN FOUND = " + (token != null && !token.isBlank()));
+        } catch (SecretsException e) {
+            throw new IllegalStateException("Could not load DISCORD_TOKEN from AWS Secrets Manager", e);
+        }
 
         if (token == null || token.isBlank()) {
-            throw new IllegalStateException("DISCORD_TOKEN not found in .env file");
+            throw new IllegalStateException("DISCORD_TOKEN is missing from AWS Secrets Manager");
         }
 
         // Selects Redis storage if available, otherwise falls back to memory storage
