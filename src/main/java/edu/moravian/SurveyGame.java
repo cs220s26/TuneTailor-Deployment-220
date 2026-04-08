@@ -5,9 +5,7 @@ import java.util.List;
 public class SurveyGame {
 
     private final SurveyStorage storage;
-
     private final MoodAnalyzer analyzer;
-
     private final ArtistRecommender recommender;
 
     public SurveyGame(SurveyStorage storage,
@@ -17,7 +15,6 @@ public class SurveyGame {
         this.analyzer = analyzer;
         this.recommender = recommender;
     }
-
 
     public static class Question {
         private final String text;
@@ -38,7 +35,6 @@ public class SurveyGame {
         public String getNextUser() { return nextUser; }
     }
 
-
     public static class SoloResult {
         private final String mood;
         private final List<String> artists;
@@ -51,7 +47,6 @@ public class SurveyGame {
         public String getMood() { return mood; }
         public List<String> getArtists() { return artists; }
     }
-
 
     public static class PairResult {
         private final String mood1;
@@ -68,7 +63,6 @@ public class SurveyGame {
         public String getMood2() { return mood2; }
         public List<String> getArtists() { return artists; }
     }
-
 
     public static class AnswerResult {
         private final boolean valid;
@@ -95,9 +89,7 @@ public class SurveyGame {
         public SoloResult getSoloResult() { return soloResult; }
     }
 
-
     public static class AnswerResultPair {
-
         private final boolean valid;
         private final boolean finished;
         private final List<String> allowed;
@@ -133,11 +125,9 @@ public class SurveyGame {
         public String user2() { return user2; }
     }
 
-
     public boolean isSoloAnswerExpected(String id) {
         return storage.isSoloActive(id) && !storage.isSoloPaused(id);
     }
-
 
     public boolean isPairAnswerExpected(String id) {
         return storage.isPairActive() && !storage.isPairPaused() &&
@@ -148,6 +138,11 @@ public class SurveyGame {
     public void forceStopAllSurveys(String id) {
         try { storage.resetSolo(id); } catch (Exception ignored) {}
         try { storage.resetPair(); } catch (Exception ignored) {}
+    }
+
+    public void hardResetAllSurveys(String id) {
+        try { storage.hardDeleteSolo(id); } catch (Exception ignored) {}
+        try { storage.hardDeletePair(); } catch (Exception ignored) {}
     }
 
     public Question startSolo(String id) {
@@ -167,45 +162,45 @@ public class SurveyGame {
         List<String> allowed = SurveyQuestions.getAllowedResponses(index);
 
         if (!allowed.contains(msg))
-            return new AnswerResult(false,false,allowed,null,null);
+            return new AnswerResult(false, false, allowed, null, null);
 
-        storage.saveSoloAnswer(id,index,msg);
+        storage.saveSoloAnswer(id, index, msg);
         index++;
 
         if (index >= SurveyQuestions.getTotalQuestions()) {
-            List<String> answers =
-                    SurveyQuestions.retrieveAnswersInOrder(storage,id);
+            List<String> answers = SurveyQuestions.retrieveAnswersInOrder(storage, id);
 
             String mood = analyzer.determineMood(answers);
             List<String> artists = recommender.recommendSolo(mood);
 
             storage.resetSolo(id);
-            return new AnswerResult(true,true,allowed,null,
-                    new SoloResult(mood,artists));
+            return new AnswerResult(true, true, allowed, null,
+                    new SoloResult(mood, artists));
         }
 
-        storage.setSoloIndex(id,index);
-        return new AnswerResult(true,false,allowed,
+        storage.setSoloIndex(id, index);
+        return new AnswerResult(true, false, allowed,
                 new Question(
                         SurveyQuestions.getQuestion(index),
                         SurveyQuestions.getAllowedResponses(index),
-                        index,id),
+                        index, id),
                 null);
     }
 
-
-    public void pauseSolo(String id) { storage.setSoloPaused(id,true); }
+    public void pauseSolo(String id) {
+        storage.setSoloPaused(id, true);
+    }
 
     public Question resumeSolo(String id) {
         if (!storage.isSoloActive(id)) return null;
 
-        storage.setSoloPaused(id,false);
+        storage.setSoloPaused(id, false);
         int index = storage.getSoloIndex(id);
 
         return new Question(
                 SurveyQuestions.getQuestion(index),
                 SurveyQuestions.getAllowedResponses(index),
-                index,id);
+                index, id);
     }
 
     public void startPair(String id) {
@@ -218,7 +213,6 @@ public class SurveyGame {
     }
 
     public Question joinPair(String id) {
-
         if (storage.getPairUser2() != null)
             return null;
 
@@ -236,7 +230,6 @@ public class SurveyGame {
         );
     }
 
-
     public AnswerResultPair submitPairAnswer(String id, String msg) {
         String u1 = storage.getPairUser1();
         String u2 = storage.getPairUser2();
@@ -244,53 +237,50 @@ public class SurveyGame {
         int turn = storage.getPairTurn();
 
         if (turn == 1 && !id.equals(u1))
-            return new AnswerResultPair(false,false,null,u1,null,null,null,u1,u2);
+            return new AnswerResultPair(false, false, null, u1, null, null, null, u1, u2);
 
         if (turn == 2 && !id.equals(u2))
-            return new AnswerResultPair(false,false,null,u2,null,null,null,u1,u2);
+            return new AnswerResultPair(false, false, null, u2, null, null, null, u1, u2);
 
         List<String> allowed = SurveyQuestions.getAllowedResponses(index);
         if (!allowed.contains(msg))
-            return new AnswerResultPair(false,false,allowed,null,null,null,null,u1,u2);
+            return new AnswerResultPair(false, false, allowed, null, null, null, null, u1, u2);
 
-        if (turn == 1) storage.savePairAnswerUser1(index,msg);
-        else storage.savePairAnswerUser2(index,msg);
+        if (turn == 1) storage.savePairAnswerUser1(index, msg);
+        else storage.savePairAnswerUser2(index, msg);
 
         index++;
 
         if (index >= SurveyQuestions.getTotalQuestions()) {
-            List<String> a1 =
-                    SurveyQuestions.retrieveAnswersInOrder(storage,u1,true);
-            List<String> a2 =
-                    SurveyQuestions.retrieveAnswersInOrder(storage,u2,false);
+            List<String> a1 = SurveyQuestions.retrieveAnswersInOrder(storage, u1, true);
+            List<String> a2 = SurveyQuestions.retrieveAnswersInOrder(storage, u2, false);
 
             String m1 = analyzer.determineMood(a1);
             String m2 = analyzer.determineMood(a2);
-            List<String> artists =
-                    recommender.recommendPair(m1,m2);
+            List<String> artists = recommender.recommendPair(m1, m2);
 
             storage.resetPair();
-            return new AnswerResultPair(true,true,null,null,null,
-                    new PairResult(m1,m2,artists),
-                    null,u1,u2);
+            return new AnswerResultPair(true, true, null, null, null,
+                    new PairResult(m1, m2, artists),
+                    null, u1, u2);
         }
 
         storage.setPairIndex(index);
-        storage.setPairTurn(turn==1?2:1);
+        storage.setPairTurn(turn == 1 ? 2 : 1);
 
-        String next =
-                storage.getPairTurn()==1 ? u1 : u2;
+        String next = storage.getPairTurn() == 1 ? u1 : u2;
 
-        return new AnswerResultPair(true,false,null,null,
+        return new AnswerResultPair(true, false, null, null,
                 new Question(
                         SurveyQuestions.getQuestion(index),
                         SurveyQuestions.getAllowedResponses(index),
-                        index,next),
-                null,next,u1,u2);
+                        index, next),
+                null, next, u1, u2);
     }
 
-    public void pausePair(String id) { storage.setPairPaused(true); }
-
+    public void pausePair(String id) {
+        storage.setPairPaused(true);
+    }
 
     public Question resumePair(String id) {
         if (!storage.isPairActive()) return null;
@@ -299,14 +289,14 @@ public class SurveyGame {
         int index = storage.getPairIndex();
 
         String next =
-                storage.getPairTurn()==1 ?
+                storage.getPairTurn() == 1 ?
                         storage.getPairUser1() :
                         storage.getPairUser2();
 
         return new Question(
                 SurveyQuestions.getQuestion(index),
                 SurveyQuestions.getAllowedResponses(index),
-                index,next);
+                index, next);
     }
 
     public Question smartResume(String id) {

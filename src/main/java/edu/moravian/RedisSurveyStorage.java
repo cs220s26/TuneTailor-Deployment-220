@@ -5,24 +5,50 @@ import redis.clients.jedis.JedisPool;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 public class RedisSurveyStorage implements SurveyStorage {
 
     private final JedisPool pool;
-
-    // Fallback storage when Redis is unavailable
     private final MemorySurveyStorage memoryFallback = new MemorySurveyStorage();
+    private final AtomicBoolean redisOnline = new AtomicBoolean(true);
 
     public RedisSurveyStorage(JedisPool pool) {
         this.pool = pool;
+        checkInitialRedisState();
     }
 
-    // Executes a Redis operation safely and returns a fallback value if Redis is unreachable
+    private void checkInitialRedisState() {
+        try (Jedis j = pool.getResource()) {
+            j.ping();
+            redisOnline.set(true);
+            System.out.println("✅ Redis connected successfully. Survey storage is using Redis.");
+        } catch (Exception e) {
+            redisOnline.set(false);
+            System.out.println("⚠ Redis is offline at startup — using MEMORY fallback for survey storage.");
+        }
+    }
+
+    private void markRedisOffline(Exception e) {
+        if (redisOnline.compareAndSet(true, false)) {
+            System.out.println("⚠ Redis went offline — switching survey storage to MEMORY fallback.");
+            System.out.println("   Cause: " + e.getClass().getSimpleName() + ": " + e.getMessage());
+        }
+    }
+
+    private void markRedisOnline() {
+        if (redisOnline.compareAndSet(false, true)) {
+            System.out.println("✅ Redis is back online — survey storage has reconnected to Redis.");
+        }
+    }
+
     private <T> T safeRedis(RedisAction<T> action, T fallback) {
         try (Jedis j = pool.getResource()) {
-            return action.run(j);
+            T result = action.run(j);
+            markRedisOnline();
+            return result;
         } catch (Exception e) {
-            System.out.println("⚠ Redis offline — using MEMORY instead");
+            markRedisOffline(e);
             return fallback;
         }
     }
@@ -30,8 +56,9 @@ public class RedisSurveyStorage implements SurveyStorage {
     private void safeRedisVoid(RedisVoidAction action) {
         try (Jedis j = pool.getResource()) {
             action.run(j);
+            markRedisOnline();
         } catch (Exception e) {
-            System.out.println("⚠ Redis offline — using MEMORY instead");
+            markRedisOffline(e);
         }
     }
 
@@ -62,8 +89,11 @@ public class RedisSurveyStorage implements SurveyStorage {
     @Override
     public void setSoloActive(String userId, boolean active) {
         safeRedisVoid(j -> {
-            if (active) j.set("solo:active:" + userId, "1");
-            else j.del("solo:active:" + userId);
+            if (active) {
+                j.set("solo:active:" + userId, "1");
+            } else {
+                j.del("solo:active:" + userId);
+            }
         });
         memoryFallback.setSoloActive(userId, active);
     }
@@ -71,8 +101,11 @@ public class RedisSurveyStorage implements SurveyStorage {
     @Override
     public void setSoloPaused(String userId, boolean paused) {
         safeRedisVoid(j -> {
-            if (paused) j.set("solo:paused:" + userId, "1");
-            else j.del("solo:paused:" + userId);
+            if (paused) {
+                j.set("solo:paused:" + userId, "1");
+            } else {
+                j.del("solo:paused:" + userId);
+            }
         });
         memoryFallback.setSoloPaused(userId, paused);
     }
@@ -104,7 +137,7 @@ public class RedisSurveyStorage implements SurveyStorage {
         return safeRedis(j -> {
             Map<String, String> raw = j.hgetAll("solo:answers:" + userId);
             Map<Integer, String> out = new HashMap<>();
-            for (var e : raw.entrySet()) {
+            for (Map.Entry<String, String> e : raw.entrySet()) {
                 out.put(Integer.parseInt(e.getKey()), e.getValue());
             }
             return out;
@@ -116,10 +149,22 @@ public class RedisSurveyStorage implements SurveyStorage {
         safeRedisVoid(j -> j.del(
                 "solo:active:" + userId,
                 "solo:paused:" + userId,
+                "solo:index:" + userId
+        ));
+        memoryFallback.setSoloActive(userId, false);
+        memoryFallback.setSoloPaused(userId, false);
+        memoryFallback.setSoloIndex(userId, 0);
+    }
+
+    @Override
+    public void hardDeleteSolo(String userId) {
+        safeRedisVoid(j -> j.del(
+                "solo:active:" + userId,
+                "solo:paused:" + userId,
                 "solo:index:" + userId,
                 "solo:answers:" + userId
         ));
-        memoryFallback.resetSolo(userId);
+        memoryFallback.hardDeleteSolo(userId);
     }
 
     @Override
@@ -141,8 +186,11 @@ public class RedisSurveyStorage implements SurveyStorage {
     @Override
     public void setPairActive(boolean active) {
         safeRedisVoid(j -> {
-            if (active) j.set("pair:active", "1");
-            else j.del("pair:active");
+            if (active) {
+                j.set("pair:active", "1");
+            } else {
+                j.del("pair:active");
+            }
         });
         memoryFallback.setPairActive(active);
     }
@@ -150,8 +198,11 @@ public class RedisSurveyStorage implements SurveyStorage {
     @Override
     public void setPairPaused(boolean paused) {
         safeRedisVoid(j -> {
-            if (paused) j.set("pair:paused", "1");
-            else j.del("pair:paused");
+            if (paused) {
+                j.set("pair:paused", "1");
+            } else {
+                j.del("pair:paused");
+            }
         });
         memoryFallback.setPairPaused(paused);
     }
@@ -227,7 +278,7 @@ public class RedisSurveyStorage implements SurveyStorage {
         return safeRedis(j -> {
             Map<String, String> raw = j.hgetAll("pair:answers:1");
             Map<Integer, String> out = new HashMap<>();
-            for (var e : raw.entrySet()) {
+            for (Map.Entry<String, String> e : raw.entrySet()) {
                 out.put(Integer.parseInt(e.getKey()), e.getValue());
             }
             return out;
@@ -239,7 +290,7 @@ public class RedisSurveyStorage implements SurveyStorage {
         return safeRedis(j -> {
             Map<String, String> raw = j.hgetAll("pair:answers:2");
             Map<Integer, String> out = new HashMap<>();
-            for (var e : raw.entrySet()) {
+            for (Map.Entry<String, String> e : raw.entrySet()) {
                 out.put(Integer.parseInt(e.getKey()), e.getValue());
             }
             return out;
@@ -254,10 +305,28 @@ public class RedisSurveyStorage implements SurveyStorage {
                 "pair:index",
                 "pair:turn",
                 "pair:user1",
+                "pair:user2"
+        ));
+        memoryFallback.setPairActive(false);
+        memoryFallback.setPairPaused(false);
+        memoryFallback.setPairIndex(0);
+        memoryFallback.setPairTurn(1);
+        memoryFallback.setPairUser1(null);
+        memoryFallback.setPairUser2(null);
+    }
+
+    @Override
+    public void hardDeletePair() {
+        safeRedisVoid(j -> j.del(
+                "pair:active",
+                "pair:paused",
+                "pair:index",
+                "pair:turn",
+                "pair:user1",
                 "pair:user2",
                 "pair:answers:1",
                 "pair:answers:2"
         ));
-        memoryFallback.resetPair();
+        memoryFallback.hardDeletePair();
     }
 }

@@ -7,7 +7,7 @@ import edu.moravian.exceptions.SurveyAlreadyActiveException;
 
 public class TuneTailorResponder extends ListenerAdapter {
 
-    private static final String ALLOWED_CHANNEL = "demarest-bot";
+    private static final String ALLOWED_CHANNEL = "log-testing";
     private final SurveyGame game;
 
     public TuneTailorResponder(SurveyGame game) {
@@ -21,17 +21,11 @@ public class TuneTailorResponder extends ListenerAdapter {
     @Override
     public void onMessageReceived(MessageReceivedEvent e) {
 
-        // Ignores bot messages
         if (e.getAuthor().isBot()) return;
-
-        // Only allow messages from guilds(chanells)
         if (!e.isFromGuild()) return;
-
-        // Only process valid message channels
         if (!(e.getChannel() instanceof net.dv8tion.jda.api.entities.channel.middleman.GuildMessageChannel))
             return;
 
-        // Restrict command handling to the configured channel
         String channelName = e.getChannel().getName().toLowerCase().trim();
         if (!channelName.equals(ALLOWED_CHANNEL)) return;
 
@@ -51,6 +45,11 @@ public class TuneTailorResponder extends ListenerAdapter {
                 case "!stop" -> {
                     game.forceStopAllSurveys(id);
                     reply(e, TuneTailorResponses.stopped());
+                }
+
+                case "!reset" -> {
+                    game.hardResetAllSurveys(id);
+                    reply(e, TuneTailorResponses.reset());
                 }
 
                 case "!survey" -> {
@@ -292,7 +291,6 @@ public class TuneTailorResponder extends ListenerAdapter {
         reply(e, TuneTailorResponses.unknown());
     }
 
-    // Test-only command handler used by JUnit to make testable in the first place
     public String handleTest(String userId, String input) {
 
         if (input == null || input.trim().isEmpty())
@@ -310,6 +308,11 @@ public class TuneTailorResponder extends ListenerAdapter {
                 case "!stop" -> {
                     game.forceStopAllSurveys(userId);
                     return TuneTailorResponses.stopped();
+                }
+
+                case "!reset" -> {
+                    game.hardResetAllSurveys(userId);
+                    return TuneTailorResponses.reset();
                 }
 
                 case "!survey" -> {

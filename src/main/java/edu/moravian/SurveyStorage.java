@@ -21,8 +21,11 @@ public interface SurveyStorage {
     // Retrieves all stored solo answers for a user
     Map<Integer, String> getAllSoloAnswers(String userId);
 
-    // Clears all solo survey data for a user
+    // Clears solo session state but preserves answers
     void resetSolo(String userId);
+
+    // Hard deletes all solo survey data including answers
+    void hardDeleteSolo(String userId);
 
     boolean isPairActive();
 
@@ -57,11 +60,14 @@ public interface SurveyStorage {
     void savePairAnswerUser2(int index, String answer);
 
     // Retrieves all answers submitted by user 1 in the pair survey
-    Map<Integer,String> getAllPairAnswersUser1();
+    Map<Integer, String> getAllPairAnswersUser1();
 
     // Retrieves all answers submitted by user 2 in the pair survey
-    Map<Integer,String> getAllPairAnswersUser2();
+    Map<Integer, String> getAllPairAnswersUser2();
 
-    // Clears all pair survey data
+    // Clears pair session state but preserves answers
     void resetPair();
+
+    // Hard deletes all pair survey data including answers
+    void hardDeletePair();
 }

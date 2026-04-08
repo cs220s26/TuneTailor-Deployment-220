@@ -28,7 +28,7 @@ class MemorySurveyStorageTest {
         s.resetSolo("u1");
 
         assertFalse(s.isSoloActive("u1"));
-        assertTrue(s.getAllSoloAnswers("u1").isEmpty());
+        assertFalse(s.getAllSoloAnswers("u1").isEmpty());
     }
 
     @Test
@@ -231,7 +231,7 @@ class MemorySurveyStorageTest {
         MemorySurveyStorage s = new MemorySurveyStorage();
         s.savePairAnswerUser1(0,"x");
         s.resetPair();
-        assertTrue(s.getAllPairAnswersUser1().isEmpty());
+        assertFalse(s.getAllPairAnswersUser1().isEmpty());
     }
 
     @Test
@@ -245,5 +245,27 @@ class MemorySurveyStorageTest {
         MemorySurveyStorage s = new MemorySurveyStorage();
         s.setPairIndex(4);
         assertEquals(4, s.getPairIndex());
+    }
+
+    @Test
+    void hardDeleteSoloClearsAnswers() {
+        MemorySurveyStorage s = new MemorySurveyStorage();
+        s.saveSoloAnswer("u1", 0, "happy");
+
+        s.hardDeleteSolo("u1");
+
+        assertTrue(s.getAllSoloAnswers("u1").isEmpty());
+    }
+
+    @Test
+    void hardDeletePairClearsAnswers() {
+        MemorySurveyStorage s = new MemorySurveyStorage();
+        s.savePairAnswerUser1(0, "x");
+        s.savePairAnswerUser2(0, "y");
+
+        s.hardDeletePair();
+
+        assertTrue(s.getAllPairAnswersUser1().isEmpty());
+        assertTrue(s.getAllPairAnswersUser2().isEmpty());
     }
 }

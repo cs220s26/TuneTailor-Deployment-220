@@ -8,17 +8,22 @@ public class TuneTailorResponses {
         return """
                 🎧 **TuneTailor Commands**
                 **!help** - pulls this menu up
-                **!survey** – start a solo survey  
-                **!pairsurvey** – host a pair survey  
-                **!join** – join the pair survey  
-                **!pause solo / !resume solo**  
-                **!pause pair / !resume pair**  
-                **!stop** – cancel all surveys  
+                **!survey** – start a solo survey
+                **!pairsurvey** – host a pair survey
+                **!join** – join the pair survey
+                **!pause solo / !resume solo**
+                **!pause pair / !resume pair**
+                **!stop** – stop surveys but preserve stored answers
+                **!reset** – fully delete all survey data
                 """;
     }
 
     public static String stopped() {
-        return "🛑 All surveys stopped.";
+        return "🛑 All surveys stopped. Stored answers were preserved.";
+    }
+
+    public static String reset() {
+        return "🗑 All survey data fully deleted.";
     }
 
     public static String unknown() {
@@ -90,7 +95,7 @@ public class TuneTailorResponses {
                 🟣 **PAIR SURVEY |**
                 Pair formed!
                 Waiting for second participant.
-                
+
                 Type **!join** to participate.
                 """;
     }
@@ -129,7 +134,6 @@ public class TuneTailorResponses {
         return "❌ Invalid answer. Allowed: " + r.allowed();
     }
 
-    // Builds a message when the wrong user attempts to answer
     public static String pairWrongUser(String user) {
         return """
                 🟣 **PAIR SURVEY |**

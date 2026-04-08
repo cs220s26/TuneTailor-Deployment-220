@@ -12,11 +12,8 @@ public class MemorySurveyStorage implements SurveyStorage {
     private final Map<String, Map<Integer, String>> soloAnswers = new HashMap<>();
 
     private boolean pairActive = false;
-
     private boolean pairPaused = false;
-
     private String pairUser1 = null;
-
     private String pairUser2 = null;
 
     // Current question index for the pair survey
@@ -43,12 +40,20 @@ public class MemorySurveyStorage implements SurveyStorage {
 
     @Override
     public void setSoloActive(String userId, boolean active) {
-        soloActive.put(userId, active);
+        if (active) {
+            soloActive.put(userId, true);
+        } else {
+            soloActive.remove(userId);
+        }
     }
 
     @Override
     public void setSoloPaused(String userId, boolean paused) {
-        soloPaused.put(userId, paused);
+        if (paused) {
+            soloPaused.put(userId, true);
+        } else {
+            soloPaused.remove(userId);
+        }
     }
 
     @Override
@@ -68,11 +73,18 @@ public class MemorySurveyStorage implements SurveyStorage {
 
     @Override
     public Map<Integer, String> getAllSoloAnswers(String userId) {
-        return soloAnswers.getOrDefault(userId, new HashMap<>());
+        return new HashMap<>(soloAnswers.getOrDefault(userId, new HashMap<>()));
     }
 
     @Override
     public void resetSolo(String userId) {
+        soloActive.remove(userId);
+        soloPaused.remove(userId);
+        soloIndex.remove(userId);
+    }
+
+    @Override
+    public void hardDeleteSolo(String userId) {
         soloActive.remove(userId);
         soloPaused.remove(userId);
         soloIndex.remove(userId);
@@ -151,16 +163,26 @@ public class MemorySurveyStorage implements SurveyStorage {
 
     @Override
     public Map<Integer, String> getAllPairAnswersUser1() {
-        return pairAnswersUser1;
+        return new HashMap<>(pairAnswersUser1);
     }
 
     @Override
     public Map<Integer, String> getAllPairAnswersUser2() {
-        return pairAnswersUser2;
+        return new HashMap<>(pairAnswersUser2);
     }
 
     @Override
     public void resetPair() {
+        pairActive = false;
+        pairPaused = false;
+        pairUser1 = null;
+        pairUser2 = null;
+        pairIndex = 0;
+        pairTurn = 1;
+    }
+
+    @Override
+    public void hardDeletePair() {
         pairActive = false;
         pairPaused = false;
         pairUser1 = null;
