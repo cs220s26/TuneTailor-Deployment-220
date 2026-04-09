@@ -3,6 +3,8 @@ package edu.moravian;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
 
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -18,6 +20,14 @@ public class RedisSurveyStorage implements SurveyStorage {
     private final MemorySurveyStorage memoryFallback = new MemorySurveyStorage();
     private final AtomicBoolean redisOnline = new AtomicBoolean(true);
 
+    private static final DateTimeFormatter TIME_FORMAT =
+            DateTimeFormatter.ofPattern("HH:mm:ss");
+
+    private static void logWithTimestamp(String message) {
+        String time = LocalTime.now().format(TIME_FORMAT);
+        System.out.println("[" + time + "] " + message);
+    }
+
     public RedisSurveyStorage(JedisPool pool) {
         this.pool = pool;
         checkInitialRedisState();
@@ -27,23 +37,23 @@ public class RedisSurveyStorage implements SurveyStorage {
         try (Jedis j = pool.getResource()) {
             j.ping();
             redisOnline.set(true);
-            System.out.println("✅ Redis connected successfully. Survey storage is using Redis.");
+            logWithTimestamp("Redis connected successfully. Survey storage is using Redis.");
         } catch (Exception e) {
             redisOnline.set(false);
-            System.out.println("⚠ Redis is offline at startup — using MEMORY fallback for survey storage.");
+            logWithTimestamp("Redis is offline at startup - using MEMORY fallback for survey storage.");
         }
     }
 
     private void markRedisOffline(Exception e) {
         if (redisOnline.compareAndSet(true, false)) {
-            System.out.println("⚠ Redis went offline — switching survey storage to MEMORY fallback.");
-            System.out.println("   Cause: " + e.getClass().getSimpleName() + ": " + e.getMessage());
+            logWithTimestamp("Redis went offline - switching survey storage to MEMORY fallback.");
+            logWithTimestamp("Cause: " + e.getClass().getSimpleName() + ": " + e.getMessage());
         }
     }
 
     private void markRedisOnline() {
         if (redisOnline.compareAndSet(false, true)) {
-            System.out.println("✅ Redis is back online — survey storage has reconnected to Redis.");
+            logWithTimestamp("Redis is back online - survey storage has reconnected to Redis.");
         }
     }
 

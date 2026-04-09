@@ -19,16 +19,12 @@ public class TuneTailorResponses {
                 **!pause solo / !resume solo**
                 **!pause pair / !resume pair**
                 **!stop** – stop surveys but preserve stored answers
-                **!reset** – fully delete all survey data
                 """;
+                
     }
 
     public static String stopped() {
         return "🛑 All surveys stopped. Stored answers were preserved.";
-    }
-
-    public static String reset() {
-        return "🗑 All survey data fully deleted.";
     }
 
     public static String unknown() {

@@ -70,10 +70,6 @@ public class TuneTailorResponder extends ListenerAdapter {
                     reply(e, TuneTailorResponses.stopped());
                 }
 
-                case "!reset" -> {
-                    game.hardResetAllSurveys(id);
-                    reply(e, TuneTailorResponses.reset());
-                }
 
                 case "!survey" -> {
                     try {
@@ -345,11 +341,7 @@ public class TuneTailorResponder extends ListenerAdapter {
                     game.forceStopAllSurveys(userId);
                     return TuneTailorResponses.stopped();
                 }
-
-                case "!reset" -> {
-                    game.hardResetAllSurveys(userId);
-                    return TuneTailorResponses.reset();
-                }
+              
 
                 case "!survey" -> {
                     var q = game.startSolo(userId);
