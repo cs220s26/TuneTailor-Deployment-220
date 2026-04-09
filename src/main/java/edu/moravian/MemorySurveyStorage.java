@@ -3,6 +3,13 @@ package edu.moravian;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * Memory specific implementation of the storage interface
+ *
+ * Implements methods from the survey storage
+ *
+ * Stores user survey data in memory as a fallback for a Redis interruption
+ */
 public class MemorySurveyStorage implements SurveyStorage {
 
     // Solo survey state

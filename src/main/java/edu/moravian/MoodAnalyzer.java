@@ -2,6 +2,11 @@ package edu.moravian;
 
 import java.util.*;
 
+/**
+ * Class used to analyze mood of user(s) based on survey data collected
+ *
+ * Used to determine a recommendation based on survey data and determined mood
+ */
 public class MoodAnalyzer {
 
     public String determineMood(List<String> answers) {

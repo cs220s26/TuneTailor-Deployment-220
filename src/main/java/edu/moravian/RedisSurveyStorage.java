@@ -7,6 +7,11 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+/**
+ * Redis specific implementation of the storage interface
+ *
+ * Stores persistent data in a Redis database
+ */
 public class RedisSurveyStorage implements SurveyStorage {
 
     private final JedisPool pool;

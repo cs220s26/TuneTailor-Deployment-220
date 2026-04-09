@@ -6,6 +6,12 @@ import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.requests.GatewayIntent;
 import redis.clients.jedis.JedisPool;
 
+/**
+ * Class used to create and construct all neccesary components for the bot to function
+ *
+ * Launches the bot when all components have been created
+ *
+ */
 public class TuneTailorBot {
 
     public static void main(String[] args) throws Exception {

@@ -4,12 +4,19 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.*;
 
+/**
+ * Reccomends artists based on different moods associated with an artist from
+ * a file names artists.txt
+ */
 public class ArtistRecommender {
 
     private final Map<String, List<String>> artistsByMood = new HashMap<>();
 
     private final Random random = new Random();
 
+    /**
+     * Runs the components to recommend artists based on mood
+     */
     public ArtistRecommender() {
         if (!loadFromProjectRoot()) {
             loadFallback();
@@ -17,7 +24,10 @@ public class ArtistRecommender {
         ensureMinimumNeutral();
     }
 
-
+    /**
+     * Loads contents from artists.txt
+     * @return
+     */
     private boolean loadFromProjectRoot() {
         try {
             Path path = Path.of("artists.txt");
@@ -44,6 +54,11 @@ public class ArtistRecommender {
         }
     }
 
+    /**
+     * Reccomends artists based on a mood.  If the mood is not set, it is set to neutral
+     * @param mood - mood of user
+     * @return - random choice of matching artists
+     */
     public List<String> recommendSolo(String mood) {
         if (mood == null) mood = "neutral";
 
@@ -58,6 +73,12 @@ public class ArtistRecommender {
         return pickRandom(pool, 3);
     }
 
+    /**
+     * Recommends artists based on a mood for both users.  Sets mood to neutral if no mood is present
+     * @param mood1 - mood of first user
+     * @param mood2 - mood of second user
+     * @return - random choice of matching artists
+     */
     public List<String> recommendPair(String mood1, String mood2) {
 
         if (Objects.equals(mood1, mood2))
@@ -77,6 +98,12 @@ public class ArtistRecommender {
         return pickRandom(new ArrayList<>(combined), 3);
     }
 
+    /**
+     * Picks random artists from the pool based on mood
+     * @param pool - pool of artists from the file
+     * @param amount - number of artists in pool
+     * @return list of artists
+     */
     private List<String> pickRandom(List<String> pool, int amount) {
         List<String> copy = new ArrayList<>(pool);
         Collections.shuffle(copy, random);

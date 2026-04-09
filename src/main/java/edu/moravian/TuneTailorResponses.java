@@ -2,6 +2,11 @@ package edu.moravian;
 
 import java.util.List;
 
+/**
+ * Holds responses to be sent out to participants when interacting with the bot
+ * These methods are used by the TuneTailorResponder class when a specific message
+ * needs to be displayed to the user
+ */
 public class TuneTailorResponses {
 
     public static String help() {

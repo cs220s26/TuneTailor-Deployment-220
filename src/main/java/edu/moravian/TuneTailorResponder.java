@@ -5,6 +5,12 @@ import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import edu.moravian.exceptions.PairModeConflictException;
 import edu.moravian.exceptions.SurveyAlreadyActiveException;
 
+/**
+ * This class will handle the types of messages that will be sent out to the user
+ * while participating with the bot
+ *
+ * It uses responses from the TuneTailorResponder
+ */
 public class TuneTailorResponder extends ListenerAdapter {
 
     private static final String ALLOWED_CHANNEL = "log-testing";
@@ -14,10 +20,19 @@ public class TuneTailorResponder extends ListenerAdapter {
         this.game = game;
     }
 
+    /**
+     * Used to respond to a user's input
+     * @param e - user's input
+     * @param msg - output message to user
+     */
     private void reply(MessageReceivedEvent e, String msg) {
         e.getChannel().sendMessage(msg).queue();
     }
 
+    /**
+     * Handles when it is appropriate for the bot to respond to a message
+     * @param e - Indication that a message was received
+     */
     @Override
     public void onMessageReceived(MessageReceivedEvent e) {
 
@@ -32,6 +47,14 @@ public class TuneTailorResponder extends ListenerAdapter {
         handleDiscord(e);
     }
 
+    /**
+     * Handles different responses from different user input while
+     * interacting with the bot
+     *
+     * All possible commands are handled and have responses
+     *
+     * @param e - Indication that a message was received
+     */
     private void handleDiscord(MessageReceivedEvent e) {
 
         String id = e.getAuthor().getId();
@@ -218,6 +241,13 @@ public class TuneTailorResponder extends ListenerAdapter {
         }
     }
 
+    /**
+     * Handles user input during a survey and the answers the user inputs
+     *
+     * @param e - Indication that a message was received
+     * @param id - User ID
+     * @param msg - User message
+     */
     private void handleAnswer(MessageReceivedEvent e, String id, String msg) {
 
         if (game.isSoloAnswerExpected(id)) {
@@ -291,6 +321,12 @@ public class TuneTailorResponder extends ListenerAdapter {
         reply(e, TuneTailorResponses.unknown());
     }
 
+    /**
+     * Test function to see how the bot responds to different user inputs
+     * @param userId - user's id
+     * @param input - user's input
+     * @return A message to communicated to the user
+     */
     public String handleTest(String userId, String input) {
 
         if (input == null || input.trim().isEmpty())
