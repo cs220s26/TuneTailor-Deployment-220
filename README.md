@@ -7,6 +7,11 @@
 
 ---
 
+### CI Status
+
+![Testing](https://github.com/cs220s26/TuneTailor-Deployment-220/actions/workflows/run_tests.yml/badge.svg)
+
+
 ## Project Description
 
 TuneTailor is a Discord bot that delivers personalized music recommendations based on a short interactive survey. Users may complete the survey individually (solo mode) or with another user (pair mode). Based on each participant’s responses, the system analyzes mood and returns a curated list of recommended artists.
