@@ -23,7 +23,7 @@ public class RedisSurveyStorage implements SurveyStorage {
     private static final DateTimeFormatter TIME_FORMAT =
             DateTimeFormatter.ofPattern("HH:mm:ss");
 
-    private static void logWithTimestamp(String message) {
+    public static void logWithTimestamp(String message) {
         String time = LocalTime.now().format(TIME_FORMAT);
         System.out.println("[" + time + "] " + message);
     }

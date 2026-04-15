@@ -32,3 +32,6 @@ target/
 # Build artifacts
 *.jar
 *.class
+
+# Redis Dump Fle
+dump.rdb

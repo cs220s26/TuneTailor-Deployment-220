@@ -6,6 +6,8 @@ import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.requests.GatewayIntent;
 import redis.clients.jedis.JedisPool;
 
+import static edu.moravian.RedisSurveyStorage.logWithTimestamp;
+
 /**
  * Class used to create and construct all neccesary components for the bot to function
  *
@@ -15,13 +17,15 @@ import redis.clients.jedis.JedisPool;
 public class TuneTailorBot {
 
     public static void main(String[] args) throws Exception {
-        System.out.println("Starting TuneTailor Bot...");
+        //  System.out.println("Starting TuneTailor Bot...");
+        logWithTimestamp("Starting TuneTailor Bot...");
 
         String token;
         try {
             Secrets secrets = new Secrets();
             token = secrets.getSecret("220_Discord_Token", "DISCORD_TOKEN");
-            System.out.println("AWS SECRET TOKEN FOUND = " + (token != null && !token.isBlank()));
+            //  System.out.println("AWS SECRET TOKEN FOUND = " + (token != null && !token.isBlank()));
+            logWithTimestamp("AWS SECRET TOKEN FOUND = " + (token != null && !token.isBlank()));
         } catch (SecretsException e) {
             throw new IllegalStateException("Could not load DISCORD_TOKEN from AWS Secrets Manager", e);
         }
@@ -52,7 +56,8 @@ public class TuneTailorBot {
         builder.addEventListeners(new BotListener(game));
         builder.build();
 
-        System.out.println("TuneTailor Bot running...");
+        //  System.out.println("TuneTailor Bot running...");
+        logWithTimestamp("TuneTailor Bot running...");
     }
 
     static class BotListener extends net.dv8tion.jda.api.hooks.ListenerAdapter {
