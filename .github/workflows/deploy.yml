@@ -21,6 +21,21 @@ jobs:
           script: |
             cd /home/ec2-user
 
+            if ! command -v git >/dev/null 2>&1; then
+              sudo yum install -y git
+            fi
+
+            if ! command -v mvn >/dev/null 2>&1; then
+              sudo yum install -y maven-amazon-corretto21
+            fi
+
+            if ! systemctl list-unit-files | grep -q redis6; then
+              sudo yum install -y redis6
+            fi
+
+            sudo systemctl enable redis6
+            sudo systemctl start redis6
+
             if [ ! -d "TuneTailor-Deployment-220" ]; then
               git clone https://github.com/cs220s26/TuneTailor-Deployment-220.git
             fi

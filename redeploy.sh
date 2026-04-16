@@ -8,19 +8,14 @@ SERVICE_NAME="tunetailorbot"
 cd /home/ec2-user
 
 if [ ! -d "$APP_DIR" ]; then
-  echo "Repo missing. Cloning..."
   git clone "$REPO_URL"
 fi
 
 cd "$APP_DIR"
 
-echo "Pulling latest code..."
 git pull origin main
-
-echo "Building..."
 mvn clean package -DskipTests
 
-echo "Restarting service..."
 sudo systemctl daemon-reload
 sudo systemctl restart "$SERVICE_NAME"
 sudo systemctl status "$SERVICE_NAME" --no-pager

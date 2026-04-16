@@ -17,9 +17,8 @@ git pull origin main
 mvn clean package -DskipTests
 
 sudo systemctl daemon-reload
-
+sudo systemctl enable "$SERVICE_NAME"
 sudo systemctl restart "$SERVICE_NAME"
-
 sudo systemctl status "$SERVICE_NAME" --no-pager
 
 echo "Deployment complete."
