@@ -5,7 +5,7 @@ import edu.moravian.secrets.SecretsException;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.requests.GatewayIntent;
 import redis.clients.jedis.JedisPool;
-
+import io.github.cdimascio.dotenv.Dotenv;
 import static edu.moravian.RedisSurveyStorage.logWithTimestamp;
 
 /**
@@ -20,18 +20,27 @@ public class TuneTailorBot {
         //  System.out.println("Starting TuneTailor Bot...");
         logWithTimestamp("Starting TuneTailor Bot...");
 
-        String token;
-        try {
-            Secrets secrets = new Secrets();
-            token = secrets.getSecret("220_Discord_Token", "DISCORD_TOKEN");
-            //  System.out.println("AWS SECRET TOKEN FOUND = " + (token != null && !token.isBlank()));
-            logWithTimestamp("AWS SECRET TOKEN FOUND = " + (token != null && !token.isBlank()));
-        } catch (SecretsException e) {
-            throw new IllegalStateException("Could not load DISCORD_TOKEN from AWS Secrets Manager", e);
+        String token = null;
+
+    try {
+       Secrets secrets = new Secrets();
+        token = secrets.getSecret("220_Discord_Token", "DISCORD_TOKEN");
+        logWithTimestamp("AWS SECRET TOKEN FOUND = "
+            + (token != null && !token.isBlank()));
+     } catch (SecretsException e) {
+          logWithTimestamp("AWS Secrets unavailable. Trying .env fallback...");
+     }
+
+     if (token == null || token.isBlank()) {
+         Dotenv dotenv = Dotenv.configure().ignoreIfMissing().load();
+         token = dotenv.get("DISCORD_TOKEN");
+         logWithTimestamp(".env TOKEN FOUND = "
+            + (token != null && !token.isBlank()));
         }
 
         if (token == null || token.isBlank()) {
-            throw new IllegalStateException("DISCORD_TOKEN is missing from AWS Secrets Manager");
+            throw new IllegalStateException(
+            "Could not load DISCORD_TOKEN from AWS Secrets Manager or .env");
         }
 
         SurveyStorage storage;
