@@ -20,5 +20,5 @@ jobs:
           port: 22
           script: |
             cd /home/ec2-user/TuneTailor-Deployment-220
-            chmod +x redeploy.sh
+            chmod +x userdata.sh
             ./userdata.sh
