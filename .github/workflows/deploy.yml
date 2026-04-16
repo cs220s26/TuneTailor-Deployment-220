@@ -19,6 +19,12 @@ jobs:
           key: ${{ secrets.EC2_SSH_KEY }}
           port: 22
           script: |
+            cd /home/ec2-user
+
+            if [ ! -d "TuneTailor-Deployment-220" ]; then
+              git clone https://github.com/cs220s26/TuneTailor-Deployment-220.git
+            fi
+
             cd /home/ec2-user/TuneTailor-Deployment-220
-            chmod +x userdata.sh
-            ./userdata.sh
+            chmod +x redeploy.sh
+            ./redeploy.sh
