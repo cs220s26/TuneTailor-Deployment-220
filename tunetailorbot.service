@@ -1,0 +1,22 @@
+[Unit]
+Description=TuneTailor Discord Bot
+After=network.target redis6.service
+Wants=redis6.service
+
+[Service]
+Type=simple
+User=ec2-user
+WorkingDirectory=/home/ec2-user/TuneTailor-Deployment-220
+
+# CHANGE this if your jar name is different
+ExecStart=/usr/bin/java -jar /home/ec2-user/TuneTailor-Deployment-220/target/greetingbot-1.0.0-jar-with-dependencies.jar
+
+Restart=always
+RestartSec=5
+
+# Optional but useful
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=multi-user.target

@@ -7,9 +7,12 @@
 
 ---
 
-### CI Status
+### CI (Continuous Integration) Status
 
-![Testing](https://github.com/cs220s26/TuneTailor-Deployment-220/actions/workflows/git_run_tests.yml/badge.svg)
+![CI](https://github.com/cs220s26/TuneTailor-Deployment-220/actions/workflows/git_run_tests.yml/badge.svg)
+
+### CD (Continuous Deployment) Status
+![CD](https://github.com/cs220s26/TuneTailor-Deployment-220/actions/workflows/deploy.yml/badge.svg)
 
 
 ## Project Description
