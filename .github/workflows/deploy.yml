@@ -21,4 +21,4 @@ jobs:
           script: |
             cd /home/ec2-user/TuneTailor-Deployment-220
             chmod +x redeploy.sh
-            ./redeploy.sh
+            ./userdata.sh
