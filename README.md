@@ -9,7 +9,7 @@
 
 ### CI Status
 
-![Testing](https://github.com/cs220s26/TuneTailor-Deployment-220/actions/workflows/run_tests.yml/badge.svg)
+![Testing](https://github.com/cs220s26/TuneTailor-Deployment-220/actions/workflows/git_run_tests.yml/badge.svg)
 
 
 ## Project Description
