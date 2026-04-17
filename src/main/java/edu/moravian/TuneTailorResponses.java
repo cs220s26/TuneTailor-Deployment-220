@@ -20,7 +20,7 @@ public class TuneTailorResponses {
                 **!pause pair / !resume pair**
                 **!stop** – stop surveys but preserve stored answers
                 """;
-                
+
     }
 
     public static String stopped() {

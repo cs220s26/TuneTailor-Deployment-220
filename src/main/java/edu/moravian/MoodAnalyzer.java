@@ -1,6 +1,8 @@
 package edu.moravian;
 
-import java.util.*;
+import java.util.Map;
+import java.util.LinkedHashMap;
+import java.util.List;
 
 /**
  * Class used to analyze mood of user(s) based on survey data collected

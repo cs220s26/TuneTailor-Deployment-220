@@ -34,7 +34,7 @@ public class Secrets {
             ObjectMapper mapper = new ObjectMapper();
             JsonNode root = mapper.readTree(secretEntry);
             JsonNode jsonNode = root.get(secretKey);
-            if(jsonNode == null)
+            if (jsonNode == null)
                 throw new SecretsException("Key not found in secret: " + secretKey);
             return jsonNode.asText();
         } catch (SecretsManagerException | JacksonException | SdkClientException e) {

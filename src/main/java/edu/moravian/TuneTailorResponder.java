@@ -341,7 +341,7 @@ public class TuneTailorResponder extends ListenerAdapter {
                     game.forceStopAllSurveys(userId);
                     return TuneTailorResponses.stopped();
                 }
-              
+
 
                 case "!survey" -> {
                     var q = game.startSolo(userId);

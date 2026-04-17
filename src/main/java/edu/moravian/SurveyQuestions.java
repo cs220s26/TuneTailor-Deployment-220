@@ -1,9 +1,11 @@
 package edu.moravian;
 
-import java.util.*;
+import java.util.Map;
+import java.util.List;
+import java.util.ArrayList;
 
 /**
- * 
+ *
  */
 public class SurveyQuestions {
 
@@ -37,7 +39,7 @@ public class SurveyQuestions {
 
     // Retrieves solo answers in question order
     public static List<String> retrieveAnswersInOrder(SurveyStorage storage, String userId) {
-        Map<Integer,String> map = storage.getAllSoloAnswers(userId);
+        Map<Integer, String> map = storage.getAllSoloAnswers(userId);
         List<String> out = new ArrayList<>();
 
         for (int i = 0; i < getTotalQuestions(); i++)
@@ -52,7 +54,7 @@ public class SurveyQuestions {
             String userId,
             boolean first
     ) {
-        Map<Integer,String> map =
+        Map<Integer, String> map =
                 first ? storage.getAllPairAnswersUser1()
                         : storage.getAllPairAnswersUser2();
 
