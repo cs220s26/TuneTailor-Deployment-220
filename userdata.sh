@@ -16,4 +16,8 @@ fi
 cd /home/ec2-user/TuneTailor-Deployment-220
 chmod +x redeploy.sh
 
+sudo cp tunetailorbot.service /etc/systemd/system/tunetailorbot.service
+sudo systemctl daemon-reload
+sudo systemctl enable tunetailorbot
+
 ./redeploy.sh
