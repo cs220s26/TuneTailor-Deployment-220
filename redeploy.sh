@@ -8,7 +8,7 @@ SERVICE_NAME="tunetailorbot"
 cd /home/ec2-user
 
 if [ ! -d "$APP_DIR" ]; then
-  git clone "$REPO_URL"
+  git clone "$REPO_URL" "$APP_DIR"
 fi
 
 cd "$APP_DIR"
@@ -16,8 +16,7 @@ cd "$APP_DIR"
 git pull origin main
 mvn clean package -DskipTests
 
-sudo systemctl daemon-reload
 sudo systemctl restart "$SERVICE_NAME"
 sudo systemctl status "$SERVICE_NAME" --no-pager
 
-echo "ReDeployment complete."
+echo "Redeployment complete."
