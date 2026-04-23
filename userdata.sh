@@ -14,4 +14,10 @@ if [ ! -d "/home/ec2-user/TuneTailor-Deployment-220" ]; then
 fi
 
 cd /home/ec2-user/TuneTailor-Deployment-220
-chmod +x deploy.sh redeploy.sh
+chmod +x redeploy.sh
+
+sudo cp tunetailorbot.service /etc/systemd/system/tunetailorbot.service
+sudo systemctl daemon-reload
+sudo systemctl enable tunetailorbot
+
+./redeploy.sh
