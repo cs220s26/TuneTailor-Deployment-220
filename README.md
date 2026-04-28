@@ -10,18 +10,21 @@
 ### CI (Continuous Integration) Status
 
 ![CI](https://github.com/cs220s26/TuneTailor-Deployment-220/actions/workflows/git_run_tests.yml/badge.svg)
-### Style Check Status
-![Style](https://github.com/cs220s26/TuneTailor-Deployment-220/actions/workflows/style_check.yml/badge.svg)
 
 ### CD (Continuous Deployment) Status
 ![CD](https://github.com/cs220s26/TuneTailor-Deployment-220/actions/workflows/deploy.yml/badge.svg)
+
+### Style Check Status
+![Style](https://github.com/cs220s26/TuneTailor-Deployment-220/actions/workflows/style_check.yml/badge.svg)
 
 
 ## Project Description
 
 TuneTailor is a Discord bot that delivers personalized music recommendations based on a short interactive survey. Users may complete the survey individually (solo mode) or with another user (pair mode). Based on each participant’s responses, the system analyzes mood and returns a curated list of recommended artists.
 
-The bot is fully interactive within Discord, supports pause and resume functionality, and is backed by Redis with automatic in-memory fallback for reliability. The project applies object-oriented design, test-driven development (TDD), clean code principles, and persistent storage using Redis. (more to add here ...)
+The bot is fully interactive within Discord, supports pause and resume functionality, and is backed by Redis with automatic in-memory fallback for reliability. The project applies object-oriented design, test-driven development (TDD), clean code principles, and persistent storage using Redis. 
+
+The original version of this project was designed to run locally on one machine, but has since been modified to be cloned onto a different host machine and ran locally, or deployed via and AWS (Amazon Web Services) EC2 Instance
 
 ---
 
@@ -141,13 +144,12 @@ During normal operation, both Redis and memory are updated to maintain synchroni
 
 ---
 
-## How to Run the Bot (more to add here, local & prod.)
+## How to Run the Bot
 
-*Local:* Todo:
+**Local Deployment**
 
 1. Create a `.env` file in the project root:
-- Make Sure to put only your "DISCORD_TOKEN = "
-
+- Paste the following into the file: `DISCORD_TOKEN=<your-discord-token>`
 
 2. Ensure Redis is running:
 
@@ -155,7 +157,19 @@ During normal operation, both Redis and memory are updated to maintain synchroni
 
 3. Run the main class:
 
-*Production* Todo:
+**EC2 Deployment (AWS)**
+
+1. Log into AWS (Amazon Web Services) learner lab and launch the learner lab
+
+
+2. Create an EC2 instance with the following requirements
+- Network Settings - Allow HTTP traffic from the internet
+- Advanced Details - Select the IAM Instance Profile `LabInstanceProfile` to access AWS Secrets Manager
+- Advanced Details - Upload the file `userdata.sh` under the User Data section to run a script that will deploy the bot automatically
+
+3. Launch the instance
+- Important Note: Allow some time (3 minutes) for the bot to be online on Discord.  Applications need to be installed on the instance and dependencies need to be downloaded for the bot to build and launch
+
 
 ---
 
