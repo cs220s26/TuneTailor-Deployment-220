@@ -1,22 +1,42 @@
 #!/bin/bash
-set -e
+set -euo pipefail
 
-APP_DIR="/home/ec2-user/TuneTailor-Deployment-220"
-REPO_URL="https://github.com/cs220s26/TuneTailor-Deployment-220.git"
-SERVICE_NAME="tunetailorbot"
+# resetdb.sh
+# Removes TuneTailor-related keys from Redis without flushing the entire database.
 
-cd /home/ec2-user
+detect_redis_cli() {
+    if command -v redis-cli >/dev/null 2>&1; then
+        echo "redis-cli"
+    elif command -v redis6-cli >/dev/null 2>&1; then
+        echo "redis6-cli"
+    else
+        echo "Error: redis-cli or redis6-cli not found." >&2
+        exit 1
+    fi
+}
 
-if [ ! -d "$APP_DIR" ]; then
-  git clone "$REPO_URL" "$APP_DIR"
-fi
+REDIS_CLI="$(detect_redis_cli)"
+REDIS_DB="${REDIS_DB:-0}"
 
-cd "$APP_DIR"
+echo "Using ${REDIS_CLI} on Redis DB ${REDIS_DB}"
 
-git pull origin main
-mvn clean package -DskipTests
+PATTERNS=(
+    "solo:*"
+    "pair:*"
+    "survey:*"
+    "tunetailor:*"
+)
 
-sudo systemctl restart "$SERVICE_NAME"
-sudo systemctl status "$SERVICE_NAME" --no-pager
+deleted=0
 
-echo "Redeployment complete."%
+for pattern in "${PATTERNS[@]}"; do
+    while IFS= read -r key; do
+        if [ -n "${key}" ]; then
+            "${REDIS_CLI}" -n "${REDIS_DB}" DEL "${key}" >/dev/null
+            echo "Deleted: ${key}"
+            deleted=$((deleted + 1))
+        fi
+    done < <("${REDIS_CLI}" -n "${REDIS_DB}" --raw KEYS "${pattern}")
+done
+
+echo "Done. Removed ${deleted} TuneTailor-related key(s)."
