@@ -16,7 +16,7 @@ REDIS_CLI="$(detect_redis_cli)"
 REDIS_DB="${REDIS_DB:-0}"
 
 # Fixed test user + answers
-USER_ID="Coleman's-Discord-ID"
+USER_ID="Coleman"
 
 KEY="solo:answers:${USER_ID}"
 
