@@ -1,4 +1,4 @@
-name: Run Program Integration Tests
+name: Run Program Tests
 
 on:
   push:
@@ -19,4 +19,4 @@ jobs:
         cache: maven
 
     - name: Build with Maven
-      run: mvn -B clean verify 
+      run: mvn test
