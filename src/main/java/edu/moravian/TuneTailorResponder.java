@@ -13,7 +13,7 @@ import edu.moravian.exceptions.SurveyAlreadyActiveException;
  */
 public class TuneTailorResponder extends ListenerAdapter {
 
-    private static final String ALLOWED_CHANNEL = "log-testing";
+    private static final String ALLOWED_CHANNEL = "demarest-bot";
     private final SurveyGame game;
 
     public TuneTailorResponder(SurveyGame game) {
